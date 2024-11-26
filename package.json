@@ -1,0 +1,38 @@
+{
+    "name": "base-bailey-memory",
+    "version": "1.0.0",
+    "description": "[Version de VENDEDORES gpt 3.5](https://github.com/leifermendez/bot-ws-openai/tree/35441dbf99c86ce4e1be0686f5c46aa050d0cab6)\r <p align=\"center\">\r   <img width=\"300\" src=\"https://i.imgur.com/Oauef6t.png\">\r </p>",
+    "main": "app.js",
+    "scripts": {
+        "pre-copy": "cd .. && npm run  copy.lib base-baileys-memory",
+        "start": "node app.js"
+    },
+    "keywords": [],
+    "dependencies": {
+        "@adiwajshing/baileys": "^5.0.0",
+        "@adiwajshing/keyed-db": "^0.2.4",
+        "@bot-whatsapp/bot": "^0.1.38",
+        "@bot-whatsapp/cli": "dev",
+        "@bot-whatsapp/database": "dev",
+        "@bot-whatsapp/portal": "^0.1.38",
+        "@bot-whatsapp/provider": "^0.1.0",
+        "@bot-whatsapp/provider-baileys": "^0.1.0-alpha.18",
+        "@ffmpeg-installer/ffmpeg": "^1.1.0",
+        "@nlpjs/core": "^4.26.1",
+        "@nlpjs/nlu": "^4.27.0",
+        "axios": "^1.7.7",
+        "bot-ws-plugin-openai": "^1.0.5",
+        "dotenv": "^16.4.5",
+        "fluent-ffmpeg": "^2.1.2",
+        "mime-types": "2.1.35",
+        "mssql": "^11.0.1",
+        "node-nlp": "^4.27.0",
+        "openai": "^3.3.0",
+        "puppeteer": "^23.9.0",
+        "qrcode-terminal": "^0.12.0",
+        "wa-sticker-formatter": "4.4.4",
+        "whatsapp-web.js": "^1.26.0"
+    },
+    "author": "",
+    "license": "ISC"
+}

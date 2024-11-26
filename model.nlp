@@ -1,0 +1,384 @@
+{
+  "settings": {
+    "languages": [
+      "es"
+    ],
+    "forceNER": true,
+    "tag": "nlp",
+    "threshold": 0.5,
+    "autoLoad": true,
+    "autoSave": true,
+    "modelFileName": "model.nlp",
+    "executeActionsBeforeAnswers": false,
+    "calculateSentiment": true
+  },
+  "nluManager": {
+    "settings": {
+      "tag": "nlu-manager"
+    },
+    "locales": [
+      "es"
+    ],
+    "languageNames": {},
+    "domainManagers": {
+      "es": {
+        "settings": {
+          "locale": "es",
+          "trainByDomain": false,
+          "tag": "domain-manager-es",
+          "nluByDomain": {
+            "default": {
+              "className": "NeuralNlu",
+              "settings": {}
+            }
+          },
+          "useStemDict": true
+        },
+        "stemDict": {
+          "*,product,subcategor": {
+            "intent": "filtro.productos_subcategoria",
+            "domain": "default"
+          },
+          "*,el,en,product,subcategor": {
+            "intent": "filtro.productos_subcategoria",
+            "domain": "default"
+          },
+          "*,de,mostr,product": {
+            "intent": "filtro.productos_subcategoria",
+            "domain": "default"
+          },
+          "*,de,product,quer,ver": {
+            "intent": "filtro.productos_subcategoria",
+            "domain": "default"
+          },
+          "*,ten": {
+            "intent": "consulta.disponibilidad",
+            "domain": "default"
+          },
+          "$*,entre,product,y": {
+            "intent": "filtro.productos_precio",
+            "domain": "default"
+          },
+          "subcategor": {
+            "intent": "consulta.subcategorias",
+            "domain": "default"
+          }
+        },
+        "intentDict": {
+          "filtro.productos_subcategoria": "default",
+          "consulta.disponibilidad": "default",
+          "filtro.productos_precio": "default",
+          "consulta.subcategorias": "default"
+        },
+        "sentences": [
+          {
+            "domain": "default",
+            "utterance": "productos subcategoría *",
+            "intent": "filtro.productos_subcategoria"
+          },
+          {
+            "domain": "default",
+            "utterance": "productos en la subcategoría *",
+            "intent": "filtro.productos_subcategoria"
+          },
+          {
+            "domain": "default",
+            "utterance": "mostrar productos de *",
+            "intent": "filtro.productos_subcategoria"
+          },
+          {
+            "domain": "default",
+            "utterance": "quiero ver productos de *",
+            "intent": "filtro.productos_subcategoria"
+          },
+          {
+            "domain": "default",
+            "utterance": "¿Tienen *?",
+            "intent": "consulta.disponibilidad"
+          },
+          {
+            "domain": "default",
+            "utterance": "productos entre $* y $*",
+            "intent": "filtro.productos_precio"
+          },
+          {
+            "domain": "default",
+            "utterance": "subcategorías",
+            "intent": "consulta.subcategorias"
+          }
+        ],
+        "domains": {
+          "master_domain": {
+            "settings": {
+              "locale": "es",
+              "tag": "nlu-es",
+              "keepStopwords": true,
+              "nonefeatureValue": 1,
+              "nonedeltaMultiplier": 1.2,
+              "spellCheck": false,
+              "spellCheckDistance": 1,
+              "filterZeros": true,
+              "log": true
+            },
+            "features": {
+              "product": 1,
+              "subcategor": 1,
+              "*": 1,
+              "en": 1,
+              "el": 1,
+              "mostr": 1,
+              "de": 1,
+              "quer": 1,
+              "ver": 1,
+              "ten": 1,
+              "entre": 1,
+              "$*": 1,
+              "y": 1
+            },
+            "intents": {
+              "filtro.productos_subcategoria": 1,
+              "consulta.disponibilidad": 1,
+              "filtro.productos_precio": 1,
+              "consulta.subcategorias": 1
+            },
+            "intentFeatures": {
+              "filtro.productos_subcategoria": {
+                "product": 1,
+                "subcategor": 1,
+                "*": 1,
+                "en": 1,
+                "el": 1,
+                "mostr": 1,
+                "de": 1,
+                "quer": 1,
+                "ver": 1
+              },
+              "consulta.disponibilidad": {
+                "ten": 1,
+                "*": 1
+              },
+              "filtro.productos_precio": {
+                "product": 1,
+                "entre": 1,
+                "$*": 1,
+                "y": 1
+              },
+              "consulta.subcategorias": {
+                "subcategor": 1
+              }
+            },
+            "featuresToIntent": {
+              "product": [
+                "filtro.productos_subcategoria",
+                "filtro.productos_precio"
+              ],
+              "subcategor": [
+                "filtro.productos_subcategoria",
+                "consulta.subcategorias"
+              ],
+              "*": [
+                "filtro.productos_subcategoria",
+                "consulta.disponibilidad"
+              ],
+              "en": [
+                "filtro.productos_subcategoria"
+              ],
+              "el": [
+                "filtro.productos_subcategoria"
+              ],
+              "mostr": [
+                "filtro.productos_subcategoria"
+              ],
+              "de": [
+                "filtro.productos_subcategoria"
+              ],
+              "quer": [
+                "filtro.productos_subcategoria"
+              ],
+              "ver": [
+                "filtro.productos_subcategoria"
+              ],
+              "ten": [
+                "consulta.disponibilidad"
+              ],
+              "entre": [
+                "filtro.productos_precio"
+              ],
+              "$*": [
+                "filtro.productos_precio"
+              ],
+              "y": [
+                "filtro.productos_precio"
+              ]
+            },
+            "neuralNetwork": {
+              "settings": {
+                "locale": "es",
+                "tag": "nlu-es",
+                "keepStopwords": true,
+                "nonefeatureValue": 1,
+                "nonedeltaMultiplier": 1.2,
+                "spellCheck": false,
+                "spellCheckDistance": 1,
+                "filterZeros": true,
+                "log": true
+              },
+              "features": [
+                "product",
+                "subcategor",
+                "*",
+                "en",
+                "el",
+                "mostr",
+                "de",
+                "quer",
+                "ver",
+                "ten",
+                "entre",
+                "$*",
+                "y"
+              ],
+              "intents": [
+                "filtro.productos_subcategoria",
+                "consulta.disponibilidad",
+                "filtro.productos_precio",
+                "consulta.subcategorias"
+              ],
+              "perceptrons": [
+                [
+                  7.878720283508301,
+                  1.8476039171218872,
+                  5.785571575164795,
+                  0.18802888691425323,
+                  0.18802888691425323,
+                  0.8997846841812134,
+                  1.3272303342819214,
+                  0.432695209980011,
+                  0.432695209980011,
+                  -4.195107936859131,
+                  -2.102842330932617,
+                  -2.102842330932617,
+                  -2.102842330932617,
+                  -1.571372950468334
+                ],
+                [
+                  -3.797560691833496,
+                  -2.471809148788452,
+                  4.309512138366699,
+                  -0.4543456435203552,
+                  -0.4543456435203552,
+                  -0.9868733882904053,
+                  -1.530633568763733,
+                  -0.5360360145568848,
+                  -0.5360360145568848,
+                  8.015710830688477,
+                  -0.07488339394330978,
+                  -0.07488339394330978,
+                  -0.07488339394330978,
+                  1.9601308912277762
+                ],
+                [
+                  1.9994959831237793,
+                  -1.1402355432510376,
+                  -1.7924505472183228,
+                  -0.30149829387664795,
+                  -0.30149829387664795,
+                  -0.48464974761009216,
+                  -0.8184354305267334,
+                  -0.30361440777778625,
+                  -0.30361440777778625,
+                  -0.002564708236604929,
+                  3.7936465740203857,
+                  3.7936465740203857,
+                  3.7936465740203857,
+                  0.9052786918403701
+                ],
+                [
+                  -7.010255813598633,
+                  9.473859786987305,
+                  -7.027288436889648,
+                  -1.0072425603866577,
+                  -1.0072425603866577,
+                  -0.009879077784717083,
+                  -0.019045783206820488,
+                  -0.004400701727718115,
+                  -0.004400701727718115,
+                  -0.06938260048627853,
+                  -0.05779281631112099,
+                  -0.05779281631112099,
+                  -0.05779281631112099,
+                  4.65093954997325
+                ]
+              ]
+            }
+          }
+        }
+      }
+    },
+    "intentDomains": {},
+    "extraSentences": [
+      [
+        "es",
+        "productos subcategoría *"
+      ],
+      [
+        "es",
+        "productos en la subcategoría *"
+      ],
+      [
+        "es",
+        "mostrar productos de *"
+      ],
+      [
+        "es",
+        "quiero ver productos de *"
+      ],
+      [
+        "es",
+        "¿Tienen *?"
+      ],
+      [
+        "es",
+        "productos entre $* y $*"
+      ],
+      [
+        "es",
+        "subcategorías"
+      ]
+    ]
+  },
+  "ner": {
+    "settings": {
+      "tag": "ner",
+      "entityPreffix": "%",
+      "entitySuffix": "%"
+    },
+    "rules": {}
+  },
+  "nlgManager": {
+    "settings": {
+      "tag": "nlg-manager"
+    },
+    "responses": {
+      "es": {
+        "filtro.productos_subcategoria": [
+          {
+            "answer": "Buscando productos en la subcategoría {{subcategoria}}..."
+          }
+        ],
+        "consulta.subcategorias": [
+          {
+            "answer": "Aquí están las subcategorías disponibles: {{subcategorias}}..."
+          }
+        ]
+      }
+    }
+  },
+  "actionManager": {
+    "settings": {
+      "tag": "action-manager"
+    },
+    "actions": {}
+  },
+  "slotManager": {}
+}
