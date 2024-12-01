@@ -198,7 +198,93 @@ function initializeWhatsAppBot(sqlAdapter) {
       }
       return;
     }
+    
+    if (/tengo hijos/i.test(userMessage)) {
+      const roadBikes = await sqlAdapter.getProductosPorSubcategoria("Road Bikes");
+      const mountainBikes = await sqlAdapter.getProductosPorSubcategoria("Mountain Bikes");
 
+      const formatProductos = (productos) =>
+        productos
+          .slice(0, 5) // Limitamos la respuesta a los primeros 5 productos
+          .map(
+            (prod) =>
+              `- ${prod.ProductName} (Modelo: ${prod.ProductStyle || "N/A"}, Precio: $${prod.ProductPrice.toFixed(2)})`
+          )
+          .join("\n");
+
+      const respuesta = `
+      ¡Hola! Dado que mencionaste que tienes hijos, te podrían interesar estas bicicletas:
+      
+      🚴 **Road Bikes**:
+      ${roadBikes.length > 0 ? formatProductos(roadBikes) : "No se encontraron modelos disponibles."}
+      
+      🚵 **Mountain Bikes**:
+      ${mountainBikes.length > 0 ? formatProductos(mountainBikes) : "No se encontraron modelos disponibles."}
+      
+      ¿Te interesa alguno de estos modelos? 😊
+      `;
+
+      message.reply(respuesta);
+      return;
+    }
+    if (/ya tengo una bici/i.test(userMessage)) {
+      const accesorios = await sqlAdapter.getProductosPorSubcategoria("Accessories");
+      if (accesorios.length > 0) {
+        const listaAccesorios = accesorios
+          .slice(0, 5) // Limita la respuesta a los primeros 5 productos
+          .map((acc) => `${acc.ProductName} - $${acc.ProductPrice.toFixed(2)}`)
+          .join("\n");
+        message.reply(
+          `¡Perfecto! Aquí tienes algunos accesorios disponibles para tu bicicleta:\n\n${listaAccesorios}`
+        );
+      } else {
+        message.reply(
+          "No encontré accesorios disponibles en este momento. Intenta más tarde o pregunta por otras categorías."
+        );
+      }
+      return;
+    }
+    if (/no tengo bici/i.test(userMessage)) {
+      // Consultar bicicletas disponibles
+      const bicicletas = await sqlAdapter.getProductosPorSubcategoria("Mountain Bikes");
+      const bicicletasExtras = await sqlAdapter.getProductosPorSubcategoria("Road Bikes");
+
+      // Combinar resultados
+      const todasLasBicis = [...bicicletas, ...bicicletasExtras];
+
+      if (todasLasBicis.length > 0) {
+        const listaBicis = todasLasBicis
+          .slice(0, 5) // Limita la respuesta a los primeros 5 productos
+          .map((bike) => `${bike.ProductName} - $${bike.ProductPrice.toFixed(2)}`)
+          .join("\n");
+        message.reply(
+          `¡No te preocupes! Aquí tienes algunas opciones de bicicletas disponibles:\n\n${listaBicis}`
+        );
+      } else {
+        message.reply(
+          "No encontré bicicletas disponibles en este momento. Intenta más tarde o pregunta por otras categorías."
+        );
+      }
+      return;
+    }
+    if (/tengo más de 50 años de edad/i.test(userMessage)) {
+      const bikeRacks = await sqlAdapter.getProductosPorSubcategoria("Bike Racks");
+
+      if (bikeRacks.length > 0) {
+        const listaBikeRacks = bikeRacks
+          .slice(0, 5) // Limita la respuesta a los primeros 5 productos
+          .map((rack) => `${rack.ProductName} - $${rack.ProductPrice.toFixed(2)}`)
+          .join("\n");
+        message.reply(
+          `¡Gracias por compartirlo! Aquí tienes algunas opciones de portabicicletas (Bike Racks) disponibles:\n\n${listaBikeRacks}`
+        );
+      } else {
+        message.reply(
+          "No encontré portabicicletas disponibles en este momento. Intenta más tarde o pregunta por otras categorías."
+        );
+      }
+      return;
+    }    
       const respuesta = await askGPT(userMessage);
       message.reply(respuesta);
     } catch (error) {
