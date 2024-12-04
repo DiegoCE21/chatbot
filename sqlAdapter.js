@@ -28,7 +28,7 @@ class SqlAdapter {
     return result.recordset;
   }
 
-  async getSubcategorias(categoria = null) {
+  async getSubcategorias(categoria) {
     console.log("Consulta 3: ");
 
     const pool = await this.connect();
@@ -41,6 +41,10 @@ class SqlAdapter {
     const result = await pool.request().query(query);
     return result.recordset;
   }
+
+
+
+
 
   async getProductInfo(productName) {
     console.log("Consulta para obtener información de un producto:", productName);
@@ -97,16 +101,39 @@ class SqlAdapter {
         WHERE s.SubcategoryName LIKE @subcategoria
       `;
     
-      // Mostrar la consulta SQL con los parámetros antes de ejecutarla
       console.log("Consulta SQL ejecutada: ", query);
       console.log("Parámetro: subcategoria = ", subcategoria);
     
-      // Ejecutar la consulta
       const result = await pool.request().input("subcategoria", sql.VarChar, `%${subcategoria}%`).query(query);
       
       return result.recordset;
     }
     
+    async getProductosPorSubcategoriakey(subcategoria) {
+      console.log("Consulta SQL ejecutada: ");
+
+      const pool = await this.connect();
+      
+      // Crear la consulta SQL
+      const query = `
+        SELECT p.ProductName, 
+               p.ProductDescription, 
+               p.ProductColor, 
+               p.ProductSize, 
+               p.ProductStyle, 
+               p.ProductPrice 
+        FROM Productos p
+        JOIN Subcategorias s ON p.ProductSubcategoryKey = s.ProductSubcategoryKey
+        WHERE s.ProductCategoryKey LIKE @subcategoria
+      `;
+    
+      console.log("Consulta SQL ejecutada: ", query);
+      console.log("Parámetro: subcategoria = ", subcategoria);
+    
+      const result = await pool.request().input("subcategoria", sql.VarChar, `%${subcategoria}%`).query(query);
+      
+      return result.recordset;
+    }
     
 
   async getProductosPorRangoPrecio(min, max) {
@@ -137,8 +164,9 @@ class SqlAdapter {
     `;
   
     const result = await pool.request().input("subcategoria", sql.VarChar, `%${subcategoria}%`).query(query);
-    return result.recordset[0]; // Devuelve el producto más caro.
+    return result.recordset[0]; 
   }
+
   async getProductoMasCaro(categoria) {
     console.log("Consulta para el producto más caro en categoría:", categoria);
   
@@ -155,7 +183,7 @@ class SqlAdapter {
     `;
     
     const result = await pool.request().input("categoria", sql.VarChar, `%${categoria}%`).query(query);
-    return result.recordset[0]; // Retornar el primer (y único) registro
+    return result.recordset[0]; 
   }
   
   async getCategorias() {
@@ -163,7 +191,7 @@ class SqlAdapter {
     const pool = await this.connect();
     const query = "SELECT CategoryName FROM Categorias";
     const result = await pool.request().query(query);
-    return result.recordset; // Devuelve una lista de categorías
+    return result.recordset; 
   }
 
   async getTerritorios() {
@@ -175,8 +203,122 @@ class SqlAdapter {
       ORDER BY Continent, Country, Region
     `;
     const result = await pool.request().query(query);
-    return result.recordset; // Devuelve una lista de territorios
+    return result.recordset;
   }
+
+
+
+  async getProductoMasBaratoPorSubcategoria(subcategoria) {
+    console.log("Consulta: Producto más barato por subcategoría");
+
+    const pool = await this.connect();
+    const query = `
+      SELECT TOP 1 p.ProductName, 
+                   p.ProductDescription, 
+                   p.ProductPrice
+      FROM Productos p
+      JOIN Subcategorias s ON p.ProductSubcategoryKey = s.ProductSubcategoryKey
+      WHERE s.SubcategoryName LIKE @subcategoria
+      ORDER BY p.ProductPrice ASC
+    `;
+
+    const result = await pool.request()
+                             .input("subcategoria", sql.VarChar, `%${subcategoria}%`)
+                             .query(query);
+    return result.recordset[0];
+}
+
+async getProductoMasBarato(categoria) {
+  console.log("Consulta para el producto más barato en categoría:", categoria);
+
+  const pool = await this.connect();
+  const query = `
+    SELECT TOP 1 p.ProductName, 
+                 p.ProductDescription, 
+                 p.ProductPrice
+    FROM Productos p
+    INNER JOIN Subcategorias s ON p.ProductSubcategoryKey = s.ProductSubcategoryKey
+    INNER JOIN Categorias c ON s.ProductCategoryKey = c.ProductCategoryKey
+    WHERE c.CategoryName LIKE @categoria
+    ORDER BY p.ProductPrice ASC
+  `;
+
+  const result = await pool.request()
+                           .input("categoria", sql.VarChar, `%${categoria}%`)
+                           .query(query);
+  return result.recordset[0];
+}
+
+
+
+
+
+
+
+  /*const query = `
+      MERGE UserPreferences AS target
+      USING (SELECT @userID AS UserID) AS source
+      ON (target.UserID = source.UserID)
+      WHEN MATCHED THEN
+          UPDATE SET
+              PreferredCategories = COALESCE(target.PreferredCategories, '') + ';' + @category,
+              PreferredSubcategories = COALESCE(target.PreferredSubcategories, '') + ';' + @subcategory,
+              InteractionHistory = COALESCE(target.InteractionHistory, '') + ';' + @interaction,
+              LastInteraction = GETDATE()
+      WHEN NOT MATCHED THEN
+          INSERT (UserID, PreferredCategories, PreferredSubcategories, InteractionHistory, LastInteraction)
+          VALUES (@userID, @category, @subcategory, @interaction, GETDATE());
+  `;*/
+  async saveUserInteraction(userID, category = null, subcategory = null, interaction = null, userAge = null, hasChildren = null, hasBicycle = null, numberOfChildren = null) {
+    const pool = await this.connect();
+  const query = `
+      MERGE UserPreferences AS target
+      USING (SELECT 
+                @userID AS UserID,
+                @userAge AS UserAge,
+                @hasChildren AS HasChildren,
+                @hasBicycle AS HasBicycle,
+                @numberOfChildren AS NumberOfChildren
+            ) AS source
+      ON (target.UserID = source.UserID)
+      WHEN MATCHED THEN
+          UPDATE SET
+              PreferredCategories = COALESCE(target.PreferredCategories, '') + ';' + @category,
+              PreferredSubcategories = COALESCE(target.PreferredSubcategories, '') + ';' + @subcategory,
+              InteractionHistory = COALESCE(target.InteractionHistory, '') + ';' + @interaction,
+              LastInteraction = GETDATE(),
+              UserAge = COALESCE(source.UserAge, target.UserAge),
+              HasChildren = COALESCE(source.HasChildren, target.HasChildren),
+              HasBicycle = COALESCE(source.HasBicycle, target.HasBicycle),
+              NumberOfChildren = COALESCE(source.NumberOfChildren, target.NumberOfChildren)
+      WHEN NOT MATCHED THEN
+          INSERT (UserID, PreferredCategories, PreferredSubcategories, InteractionHistory, LastInteraction, UserAge, HasChildren, HasBicycle, NumberOfChildren)
+          VALUES (@userID, @category, @subcategory, @interaction, GETDATE(), @userAge, @hasChildren, @hasBicycle, @numberOfChildren);
+  `;
+
+  await pool.request()
+      .input("userID", sql.NVarChar, userID)
+      .input("category", sql.NVarChar, category)
+      .input("subcategory", sql.NVarChar, subcategory)
+      .input("interaction", sql.NVarChar, interaction)
+      .input("userAge", sql.Int, userAge)
+      .input("hasChildren", sql.Bit, hasChildren)
+      .input("hasBicycle", sql.Bit, hasBicycle)
+      .input("numberOfChildren", sql.Int, numberOfChildren)
+      .query(query);
+}
+
+async getUserPreferences(userID) {
+  const pool = await this.connect();
+  const query = "SELECT * FROM UserPreferences WHERE UserID = @userID";
+  const result = await pool.request()
+      .input("userID", sql.NVarChar, userID)
+      .query(query);
+  return result.recordset[0];
+}
+
+
+
   
 }
 
